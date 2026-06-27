@@ -1,0 +1,20 @@
+__pycache__/
+*.pyc
+*.pyo
+.DS_Store
+.venv/
+venv/
+env/
+
+# The provided 100K dataset is large and organizer-supplied — not redistributed.
+# Place candidates.jsonl under data/ locally.
+data/
+*.jsonl.gz
+
+# Regenerable intermediates (rebuilt by run_all.sh)
+contested_set.json
+prelim_set.json
+prelim.csv
+gold_template.csv
+
+

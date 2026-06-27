@@ -1,0 +1,8 @@
+# No third-party Python packages are required — the pipeline uses the Python
+# standard library only. This keeps the ranking step lightweight and
+# dependency-free, which is what lets it run CPU-only in under 5 minutes.
+#
+# The optional coherence step calls a locally-running Ollama server over HTTP
+# (http://localhost:11434), using urllib from the standard library — so no
+# Python package is needed for it either. Install Ollama separately and pull:
+#     ollama pull qwen2.5:7b-instruct

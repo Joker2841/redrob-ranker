@@ -1,0 +1,79 @@
+# Redrob Hackathon — Submission Metadata
+
+team_name: "Solo — Sai Girish Anga"
+
+primary_contact:
+  name: "Sai Girish Anga"
+  email: "jokerbj2841@gmail.com"
+
+team_members:
+  - name: "Sai Girish Anga"
+    email: "jokerbj2841@gmail.com"
+    role: "Solo participant — full pipeline, analysis, and final decisions"
+
+github_repo: "https://github.com/Joker2841/redrob-ranker"
+
+sandbox_link: ""
+
+reproduce_command: "python rank.py --data ./data/candidates.jsonl --coherence ./coherence.jsonl --gold ./gold.csv --out ./submission.csv"
+
+compute:
+  platform: "Local laptop — NVIDIA GeForce RTX 4050 Laptop GPU, 6 GB VRAM (GPU used only for offline coherence precompute)"
+  cpu_cores: 4
+  ram_gb: 16
+  gpu_vram_gb: 6
+  python_version: "3.12.3"
+  os: "Ubuntu 24.04.4 LTS"
+  uses_gpu_for_inference: false        # ranking step is pure CPU; the GPU is precompute only
+  has_network_during_ranking: false    # no API calls during ranking
+  pre_computation_required: true       # the LLM coherence pass (Ollama, offline)
+  pre_computation_time_minutes: 45     # coherence check over the top ~300 candidates
+
+ai_tools_used:
+  - "AI coding assistant (LLM-based)"
+
+ai_usage_summary: |
+  The analysis and the calls in this system are mine. The dataset looked solid until I
+  started pulling profiles apart by hand and realised the career descriptions were the
+  same handful of paragraphs reused across everyone — so I stopped trusting the text and
+  built the whole thing around the structured fields that can't be faked. I labelled the
+  evaluation set myself, put every signal to the test against the data before trusting it
+  (and binned the ones that turned out to be noise), and made every final decision on who
+  ranks and who gets cut — including opening full profiles to catch fakes the automation
+  had let through.
+
+  I leaned on an AI coding assistant for the engineering around that: talking through
+  design choices, writing and reviewing the Python, and putting together the calibration
+  scripts (the NDCG harness, the weight sweep, the ablation tests). I shared some
+  candidate profiles with it while debugging and sanity-checking decisions.
+
+  The pipeline itself runs a small LLM locally (through Ollama) to flag profiles whose
+  claims don't hang together. That runs on my own machine — nothing goes to an external
+  service during ranking, and no candidate data leaves the box through that step.
+
+methodology_summary: |
+  The profile descriptions in this dataset are templated — the same six-ish paragraphs
+  shuffled across candidates — so reading the prose tells you nothing, and I rank on the
+  structured fields instead. The flow: drop the ~88% who aren't ML at all (by role or by a
+  real skill), floor the planted traps (timelines that contradict the stated experience,
+  tools dated before they existed, work that doesn't match the employer), cut anyone whose
+  whole career sits at consulting shops, penalise profiles a local LLM flags as internally
+  incoherent, and finally exclude the fakes I confirmed by hand. What survives gets scored
+  on proven skill-assessment depth, how broad the backed relevant skills are, and github
+  activity (kept only after an ablation showed it actually moved the needle), weighted
+  alongside experience-fit and location and scaled by how available the person is. I tuned
+  the weights against my own labelled set, and dropped keyword-matching once it measured as
+  noise. The initial `gold.csv` labels were seeded by the code-generated audit output and
+  then manually refined through hand review. Ranking is CPU-only and finishes in under five
+  minutes over 100k candidates; the LLM step is done offline beforehand. Measured NDCG@10
+  is around 0.93.
+
+declarations:
+  read_submission_spec: true
+  # "Original" = not copied/plagiarised from another team or project. AI coding
+  # assistance is fully disclosed in ai_usage_summary above. If the portal defines this
+  # checkbox specifically as "built without any AI tools," answer it per their wording.
+  code_is_original_work: true
+  no_collusion: true
+  honeypot_check_done: true
+  reproduction_tested: true
