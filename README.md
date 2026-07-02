@@ -173,6 +173,13 @@ python validate_submission.py team_xxx.csv
   catch the rest from templated text.
 - The dev set is small (~55 labels); weights were kept principled (JD-justified), not
   curve-fit to the labels.
+- **Depth anchors on verified assessments**, which slightly penalizes strong candidates
+  whose *best* assessment is only moderate: a single verified score near 65 blends against
+  an otherwise-high skill/GitHub composite and can rank a genuine tier-5 below assessment-
+  less peers. This is deliberate — verified assessments resist the template-gaming that
+  inflates self-reported breadth — and its cost is measured, not hidden: an `audit.py`
+  stress test puts it at ≈0.002 NDCG@10, affecting only the #7–13 boundary, so we accept
+  the trade rather than curve-fit the depth formula to a handful of candidates.
 
 ## 10. Development process & provenance
 
