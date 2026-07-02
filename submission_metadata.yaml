@@ -13,7 +13,7 @@ team_members:
 
 github_repo: "https://github.com/Joker2841/redrob-ranker"
 
-sandbox_link: ""
+sandbox_link: "https://huggingface.co/spaces/sai001122/redrob-ranker-demo"
 
 reproduce_command: "python rank.py --data ./data/candidates.jsonl --coherence ./coherence.jsonl --gold ./gold.csv --out ./submission.csv"
 

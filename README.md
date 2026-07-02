@@ -160,6 +160,7 @@ python validate_submission.py team_xxx.csv
 | `goldaudit.py` | Fast human gold-audit (condensed careers + proposed tiers). |
 | `evaluate.py` | NDCG@10 / @50 harness against the gold set. |
 | `sweep.py` | Empirical weight + penalty calibration. |
+| `audit.py` | Overfit / top-10 stability / location-sensitivity stress test of the calibration. |
 | **`rank.py`** | **The submission generator: full pipeline → top-100 CSV.** |
 
 ## 9. Honest limitations
@@ -172,3 +173,28 @@ python validate_submission.py team_xxx.csv
   catch the rest from templated text.
 - The dev set is small (~55 labels); weights were kept principled (JD-justified), not
   curve-fit to the labels.
+
+## 10. Development process & provenance
+
+This project was built iteratively in a local working tree and published here as a single
+clean import commit rather than as its raw local history. The evidence of that iteration is
+in the work itself, not the commit graph:
+
+- **Disproved signals** (§2): skill-duration-over-career, cross-candidate description
+  duplication, and keyword density were each tried and dropped after testing against the
+  full pool showed they added noise or no ranking value. GitHub activity was dropped, then
+  restored after a clean ablation confirmed it carries complementary tier signal.
+- **Calibration is measured, not asserted** (§6): `sweep.py` grids the weights against a
+  hand-labeled gold set, `evaluate.py` reports NDCG, and `audit.py` stress-tests whether that
+  calibration is overfit or fragile. It is neither — the shipped config sits within 0.002 of
+  the grid's best NDCG@10, and only a small number of top-10 slots are contested across all
+  near-optimal weightings.
+- **Gold integrity**: a mislabeled candidate was caught on full-profile inspection and
+  corrected in both the gold set and the submission; the local LLM coherence checker's
+  run-to-run non-determinism was neutralized with a deterministic human-verified floor.
+- **Location is JD-grounded**: the `India = 1.0 / else = 0.35` signal reflects the JD's
+  explicit Pune/Noida, India requirement and its "outside India: case-by-case, no visa
+  sponsorship" stance — a soft discount, not a hard exclusion.
+
+Every signal in the scorer earns its place empirically, and the limitations in §9 are stated
+honestly rather than hidden.

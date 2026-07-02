@@ -64,8 +64,10 @@ def main():
     b10, b50, b5 = eval_config(survivors, incoherent, gold, W, COH_PENALTY)
 
     results.sort(key=lambda r: (r[0], r[1]), reverse=True)
+    cfg = (f"depth {W['depth']:.2f} yoe {W['yoe']:.2f} loc {W['loc']:.2f} "
+           f"prior {W['prior']:.2f} coh {COH_PENALTY:.2f}")
     print(f"CURRENT  NDCG@10={b10:.3f} @50={b50:.3f}  tier5_in_top10={b5}/{min(10,total5)}"
-          f"   (depth .50 yoe .25 loc .10 prior .15 coh .40)\n")
+          f"   ({cfg})\n")
     print("TOP CONFIGS BY NDCG@10:")
     print(f"{'@10':>6} {'@50':>6} {'5@10':>5}  depth  yoe   loc  prior  coh")
     print("-" * 60)

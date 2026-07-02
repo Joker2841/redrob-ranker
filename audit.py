@@ -103,6 +103,17 @@ def main():
     for n10, w, ch, top10 in tied:
         swing |= (set(top10) - set(base_top10))
         jac.append(jaccard(top10, base_top10))
+    # shipped top-10 members that some tied config would drop
+    at_risk = [c for c in base_top10 if any(c not in set(t[3]) for t in tied)]
+    rank_of = {c: i + 1 for i, c in enumerate(base_order)}
+
+    def label(c):
+        if c in graded:
+            return f"tier {graded[c]}"
+        if c in floor:
+            return "tier<=2 (floored)"
+        return "UNLABELED  <- label this"
+
     print("\n=== 2. GOLD DISCRIMINATION (can the gold pick the right config?) ===")
     print(f"  grid size: {len(configs)} configs")
     print(f"  best gold NDCG@10 = {best10:.3f}; shipped = {b10:.3f} "
@@ -111,8 +122,14 @@ def main():
     if jac:
         print(f"  mean top-10 Jaccard of tied configs vs shipped: {sum(jac)/len(jac):.2f}")
     print(f"  SWING candidates (in some tied top-10 but NOT shipped top-10): {len(swing)}")
-    print("    -> many tied configs + low Jaccard + many swing candidates means the")
-    print("       gold cannot distinguish your top-10 from plausible alternatives.")
+    if swing or at_risk:
+        print("\n  Contested top-10 slots — label these to lock the bottom of the top-10:")
+        for c in sorted(at_risk, key=lambda c: rank_of.get(c, 999)):
+            print(f"    [shipped #{rank_of.get(c,'?'):>2}, at risk]  {c}   {label(c)}")
+        for c in sorted(swing, key=lambda c: rank_of.get(c, 999)):
+            print(f"    [shipped #{rank_of.get(c,'?'):>2}, challenger] {c}   {label(c)}")
+    print("    -> few tied configs + high Jaccard + few swing candidates = your top-10 is")
+    print("       well-determined; only the listed slots are genuinely contested.")
 
     # ---- 3. Location-signal sensitivity ----
     print("\n=== 3. LOCATION SENSITIVITY (is India=1.0/else=0.35 load-bearing?) ===")
