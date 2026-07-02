@@ -13,7 +13,7 @@ import argparse
 import csv
 import itertools
 
-from rank_survivors import load_survivors, rank
+from rank_survivors import load_survivors, rank, W, COH_PENALTY
 from evaluate import ndcg_at_k
 
 
@@ -59,9 +59,9 @@ def main():
         n10, n50, n5 = eval_config(survivors, incoherent, gold, w, ch)
         results.append((n10, n50, n5, w, ch))
 
-    # baseline (current shipped config) for comparison
-    base_w = dict(depth=0.50, yoe=0.25, loc=0.10, prior=0.15)
-    b10, b50, b5 = eval_config(survivors, incoherent, gold, base_w, 0.40)
+    # baseline = the ACTUAL shipped config, imported from rank_survivors so this
+    # comparison line can never drift from what rank.py submits.
+    b10, b50, b5 = eval_config(survivors, incoherent, gold, W, COH_PENALTY)
 
     results.sort(key=lambda r: (r[0], r[1]), reverse=True)
     print(f"CURRENT  NDCG@10={b10:.3f} @50={b50:.3f}  tier5_in_top10={b5}/{min(10,total5)}"
