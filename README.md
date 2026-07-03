@@ -1,5 +1,7 @@
 # Redrob — Intelligent Candidate Discovery (Track 01)
 
+**Live demo:** https://huggingface.co/spaces/sai001122/redrob-ranker-demo (runs the committed `rank.py` on a candidate sample, in-browser, CPU only).
+
 A transparent, CPU-fast system that reconstructs each candidate's hidden relevance
 tier for a specific Senior ML/AI Engineer job description, then ranks the full
 100,000-candidate pool down to a defensible top 100.
